@@ -12,10 +12,9 @@ Patch0:		wmtictactoe-makefile.patch
 Patch1:		wmtictactoe-home_etc.patch
 BuildRequires:	XFree86-devel
 BuildRequires:	xpm-devel
-BuildRoot:	/tmp/%{name}-%{version}-root
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define 	_prefix		/usr/X11R6
-%define		_applnkdir	%{_datadir}/applnk
 
 %description
 wmTicTacToe is a dock application game for Window Maker.
