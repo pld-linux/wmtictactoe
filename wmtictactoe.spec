@@ -6,6 +6,7 @@ Release:	3
 License:	GPL
 Group:		X11/Window Managers/Tools
 Source0:	http://atlas.ucpel.tche.br/~acamargo/%{name}-%{version}.tar.gz
+# Source0-md5:	2aa54265ec60521437d676c5d251864a
 Source1:	%{name}.desktop
 Patch0:		%{name}-makefile.patch
 Patch1:		%{name}-home_etc.patch
