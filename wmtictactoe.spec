@@ -1,15 +1,16 @@
 Summary:	TicTacToe for WindowMaker
 Summary(pl):	Kó³ko i Krzy¿yk dla WindowMakera
 Name:		wmtictactoe
-Version: 	1.1.1
+Version:	1.1.1
 Release:	2
 License:	GPL
 Group:		X11/Window Managers/Tools
+Group(de):	X11/Fenstermanager/Werkzeuge
 Group(pl):	X11/Zarz±dcy Okien/Narzêdzia
 Source0:	http://atlas.ucpel.tche.br/~acamargo/%{name}-%{version}.tar.gz
-Source1:	wmtictactoe.desktop
-Patch0:		wmtictactoe-makefile.patch
-Patch1:		wmtictactoe-home_etc.patch
+Source1:	%{name}.desktop
+Patch0:		%{name}-makefile.patch
+Patch1:		%{name}-home_etc.patch
 BuildRequires:	XFree86-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -19,7 +20,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 wmTicTacToe is a dock application game for Window Maker.
 
 %description -l pl
-wmTicTacToe jest gr± w Kó³ko i Krzy¿yk, przeznaczon± dla Doku WindowMakera.
+wmTicTacToe jest gr± w Kó³ko i Krzy¿yk, przeznaczon± dla Doku
+WindowMakera.
 
 %prep
 %setup -q -n %{name}.app
@@ -27,14 +29,14 @@ wmTicTacToe jest gr± w Kó³ko i Krzy¿yk, przeznaczon± dla Doku WindowMakera.
 %patch1 -p1
 
 %build
-%{__make} -C %{name} CFLAGS="$RPM_OPT_FLAGS -Wall"
+%{__make} -C %{name} CFLAGS="%{rpmcflags} -Wall"
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_applnkdir}/DockApplets}
 
-install -s %{name}/%{name} $RPM_BUILD_ROOT%{_bindir}
-install %{SOURCE1}         $RPM_BUILD_ROOT%{_applnkdir}/DockApplets
+install %{name}/%{name} $RPM_BUILD_ROOT%{_bindir}
+install %{SOURCE1}	$RPM_BUILD_ROOT%{_applnkdir}/DockApplets
 
 gzip -9nf CHANGES README TODO
 
