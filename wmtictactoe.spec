@@ -1,8 +1,8 @@
 Summary:	TicTacToe for WindowMaker
 Summary(pl):	Kó³ko i Krzy¿yk dla WindowMakera
 Name:		wmtictactoe
-Version: 	1.0
-Release:	2
+Version: 	1.1.1
+Release:	1
 Copyright:	GPL
 Group:		X11/Window Managers/Tools
 Group(pl):	X11/Zarz±dcy Okien/Narzêdzia
@@ -14,6 +14,7 @@ BuildRequires:	xpm-devel
 BuildRoot:	/tmp/%{name}-%{version}-root
 
 %define 	_prefix		/usr/X11R6
+%define		_applnkdir	%{_datadir}/applnk
 
 %description
 wmTicTacToe is a dock application game for Window Maker.
@@ -30,9 +31,9 @@ make -C %{name} CFLAGS="$RPM_OPT_FLAGS -Wall"
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_bindir},/usr/X11R6/share/applnk/DockApps}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_applnkdir}/DockApps}
 install -s %{name}/%{name} $RPM_BUILD_ROOT%{_bindir}
-install %{SOURCE1} $RPM_BUILD_ROOT/usr/X11R6/share/applnk/DockApps
+install %{SOURCE1} $RPM_BUILD_ROOT%{_applnkdir}/DockApps
 
 gzip -9nf CHANGES README TODO
 
@@ -43,4 +44,4 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc {CHANGES,README,TODO}.gz
 %attr(755,root,root) %{_bindir}/%{name}
-/usr/X11R6/share/applnk/DockApps/wmtictactoe.desktop
+%{_applnkdir}/DockApps/wmtictactoe.desktop
