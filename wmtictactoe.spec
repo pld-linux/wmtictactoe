@@ -2,7 +2,7 @@ Summary:	TicTacToe for WindowMaker
 Summary(pl):	Kó³ko i Krzy¿yk dla WindowMakera
 Name:		wmtictactoe
 Version:	1.1.1
-Release:	4
+Release:	5
 License:	GPL
 Group:		X11/Window Managers/Tools
 Source0:	http://atlas.ucpel.tche.br/~acamargo/%{name}-%{version}.tar.gz
@@ -28,7 +28,9 @@ WindowMakera.
 %patch1 -p1
 
 %build
-%{__make} -C %{name} CFLAGS="%{rpmcflags} -Wall"
+%{__make} -C %{name} \
+	CFLAGS="%{rpmcflags} -Wall" \
+	LIBDIR="-L/usr/X11R6/%{_lib}"
 
 %install
 rm -rf $RPM_BUILD_ROOT
