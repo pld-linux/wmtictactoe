@@ -1,0 +1,321 @@
+--- wmtictactoe.app/wmtictactoe/Makefile	Tue Feb  8 17:13:31 2000
++++ wmtictactoe.app.pius/wmtictactoe/Makefile	Tue Feb  8 16:22:42 2000
+@@ -1,6 +1,6 @@
+ LIBDIR = -L/usr/X11R6/lib
+ LIBS   = -lXpm -lXext -lX11
+-OBJS =  wmtictactoe.o ../wmgeneral/wmgeneral.o
++OBJS =  userdir.o wmtictactoe.o ../wmgeneral/wmgeneral.o
+ INCDIR = -I/usr/X11R6/include
+ CFLAGS = -O2 -Wall -g
+ 
+--- wmtictactoe.app/wmtictactoe/userdir.c	Thu Jan  1 01:00:00 1970
++++ wmtictactoe.app.pius/wmtictactoe/userdir.c	Tue Feb  8 16:22:42 2000
+@@ -0,0 +1,167 @@
++// $Id$
++#include "userdir.h"
++    
++static char *nonulhome = "";
++
++/******************************************************************************/
++    
++int getusercfv (char *variable, 
++		    char *home_dir, 
++		    char *user_dir, 
++		    size_t stringsize)
++{
++	struct stat st;
++	char *d;
++	
++	bzero (user_dir, stringsize);
++	if (variable == NULL || *variable == '\0') return (-1);
++	if (home_dir == NULL) home_dir = nonulhome;
++	d = getenv (variable);	
++	if (d == NULL || *d == '\0') return (-1);
++	if (*d == '/') 
++	    {
++	    strncpy (user_dir, d, stringsize-1);
++	    }
++	else
++	    {
++	    snprintf (user_dir, stringsize-1, "%s/%s", home_dir, d);
++	    }
++	    
++	if (stat(user_dir,&st) != -1 && S_ISDIR(st.st_mode)) 
++	    {
++	    return (0);
++	    }
++	
++	return (-1);
++}
++
++/******************************************************************************/
++
++int detectcfv(struct cfv *CFV) {
++	if (CFV->subname == NULL) CFV->subname = nonulhome;
++	if (CFV->home_dir == NULL) CFV->home_dir = getenv ("HOME");
++	if (CFV->home_dir == NULL) CFV->home_dir = CFV->home_scd;
++	if (CFV->home_dir == NULL) return (-1);
++	return 0;
++}
++
++/******************************************************************************/
++
++int preparemain(struct cfv *CFV) {
++	char *p;
++	struct stat st;
++	if ((p = strrchr(CFV->result, '/')) && *(p+1) == '\0') 
++	    p = '\0';
++	snprintf ((rindex(CFV->result,'\0')), MAXPATHLEN-1, "/%s", 
++		  CFV->subname);
++	if (stat( CFV->result,&st) != -1 
++	     && CFV->mode ? 
++		S_ISDIR(st.st_mode) : 
++		S_ISREG(st.st_mode)) /* have file or dir */
++	    return (1);
++	return 0;
++}
++
++/******************************************************************************/
++
++int preparehome(struct cfv *CFV) {
++	struct stat st;
++    	if (CFV->home_dir == NULL || *(CFV->home_dir) == '\0') return (-1);
++	if (CFV->prefix == NULL && CFV->suffix == NULL) return (-1);
++	snprintf (CFV->result, MAXPATHLEN-1, "%s/%s%s%s", 
++		       CFV->home_dir, 
++		       CFV->prefix? CFV->prefix:"",
++		       CFV->subname,
++		       CFV->suffix? CFV->suffix:"");
++	if (stat(CFV->result,&st) != -1 
++		 && CFV->mode ? 
++		    S_ISDIR(st.st_mode) : 
++		    S_ISREG(st.st_mode)) /* have file or dir */
++		return (2);
++	return (-1);
++}
++
++/******************************************************************************/
++
++int usercfv (struct cfv *CFV) {
++	int gr;
++	gr = detectcfv(CFV);
++	if (gr) return gr;
++	/* get environment variable */
++	gr = getusercfv (CFV->variable, 
++			CFV->home_dir, 
++			CFV->result,
++			MAXPATHLEN);
++	if (gr != -1) 	/* have main directory */
++	    {
++		gr = preparemain(CFV);
++		if (gr) return gr;
++	    }
++	/* don't have main directory or a proper variable set */
++	gr = preparehome(CFV);
++	return gr;
++}
++	
++/******************************************************************************/
++
++/* If directory or file doesn't exist returns the best one wich may be created */
++int notnullusercfv (struct cfv *CFV) {
++	int gr;
++	if ((usercfv(CFV)) == -1) {
++	    gr = detectcfv(CFV);
++	    if (gr) return gr;	/* remember, it works for errors! */
++	    /* get the environment variable */
++	    gr = getusercfv (CFV->variable, 
++			    CFV->home_dir, 
++			    CFV->result,
++			    MAXPATHLEN);
++	    if (gr != -1) 	/* have main directory */
++		{
++		    gr = preparemain(CFV);
++		    return 0;
++		}
++	    /* don't have main directory or a proper variable set */
++	    gr = preparehome(CFV);
++	    return 0;
++ 	}
++	return 0;	
++}
++    
++/******************************************************************************/
++
++FILE *maynullfopencfv (struct cfv *CFV, const char *mode)
++    {
++    FILE *cfvfile = NULL;
++    
++    CFV->mode = M_REGULAR_FILE;
++    if ((usercfv (CFV)) == -1) return (NULL);	
++    cfvfile = fopen (CFV->result, mode);
++    return (cfvfile);
++    }
++/******************************************************************************/
++
++FILE *notnullfopencfv (struct cfv *CFV, const char *mode)
++    {
++    FILE *cfvfile = NULL;
++    
++    CFV->mode = M_REGULAR_FILE;
++    if ((notnullusercfv (CFV)) == -1) return (NULL);	
++    cfvfile = fopen (CFV->result, mode);
++    return (cfvfile);
++    }
++
++/******************************************************************************/
++    
++FILE *fopencfv (struct cfv *CFV, const char *mode)
++    {
++    FILE *cfvfile = NULL;
++
++    if (cfvfile == NULL && (strpbrk(mode, "wa")) != NULL) /* create in best location */
++	cfvfile = notnullfopencfv (CFV, mode);
++    else 
++	cfvfile = maynullfopencfv (CFV, mode);
++    
++    return (cfvfile);
++    }
++
++/******************************************************************************/
+\ No newline at end of file
+--- wmtictactoe.app/wmtictactoe/userdir.h	Thu Jan  1 01:00:00 1970
++++ wmtictactoe.app.pius/wmtictactoe/userdir.h	Tue Feb  8 16:22:42 2000
+@@ -0,0 +1,56 @@
++// $Id$
++#ifndef USERDIR__H
++#define USERDIR__H
++
++#include <unistd.h>
++#include <string.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <sys/param.h>
++
++#define	M_REGULAR_FILE	0
++#define	M_DIRECTORY	1
++
++struct cfv {
++	char result[MAXPATHLEN];	/* our result			*/
++	char *variable;	/* name of an environment variable		*/
++	char *home_dir;	/* home directory or NULL for autodetect	*/
++	char *home_scd; /* directory if home_dir==NULL and no result	*/
++	char *subname;	/* core name of a file/directory		*/
++    	char *prefix;	/* prefix when using directly home_dir		*/
++	char *suffix;	/* suffix when using directly home_dir		*/
++	int mode;	/* expected: M_REGULAR_FILE or M_DIRECTORY	*/
++	};
++
++/* reads environment variable. if the path isn't absolute will add $HOME/
++ * at the beginning
++ * return: 0 - directory exists
++ *         -1 - directory doesn't exist
++ */
++int getusercfv (char *variable, 
++		    char *home_dir, 
++		    char *user_dir,
++		    size_t stringsize);
++/* reads the $HOME variable */
++int detectcfv(struct cfv *CFV);
++
++/* looks for the config/data file/dir.
++ * result: -1 - error - cannot find file/dir 
++ *         0 - ok
++ *         CFV.result set
++ */
++int usercfv (struct cfv *CFV);
++/* looks for the config/data file/dir.
++ * result: -1 - error - cannot read $HOME
++ *          0 - ok - if the CFV.result exists, read it. If not create it.
++ *              CFV.result set
++ */              
++int notnullusercfv (struct cfv *CFV);
++
++FILE *fopencfv (struct cfv *CFV, const char *mode);
++FILE *maynullfopencfv (struct cfv *CFV, const char *mode);
++FILE *notnullfopencfv (struct cfv *CFV, const char *mode);
++
++#endif
+--- wmtictactoe.app/wmtictactoe/wmtictactoe.c	Mon Aug 30 16:25:10 1999
++++ wmtictactoe.app.pius/wmtictactoe/wmtictactoe.c	Tue Feb  8 17:13:02 2000
+@@ -37,6 +37,7 @@
+ #include <X11/xpm.h>
+ #include <X11/extensions/shape.h>
+ 
++#include "userdir.h"
+ #include "../wmgeneral/wmgeneral.h"
+ #include "wmtictactoe-master.xpm"
+ 
+@@ -126,6 +127,7 @@
+ void    main (int argc, char *argv[]);
+ void    usage (void);
+ void    printversion (void);
++FILE	*openfile(char *mode);
+ void    readfile (void);
+ void    writefile (void);
+ 
+@@ -1039,6 +1041,32 @@
+ 		fprintf (stderr, "%s\n", WMTICTACTOE_VERSION);
+ }
+ 
++// -----------------------------------------------------------------------------
++//    funcao: openfile
++// descricao: open configuration file for writing or reading; try first
++//            $CONFIG_DIR/wmtictactoe, then ~/.wmtictactoe; if none of those
++//            files exists, create one in the best location;
++//        in: mode ('r' or 'w');
++//       out: pointer to default config file structure or NULL;
++FILE *
++openfile (char *mode)
++{
++	FILE *rcfile;
++        struct cfv etcfile;
++
++        etcfile.variable = "CONFIG_DIR";
++        etcfile.home_dir = NULL;
++        etcfile.home_scd = NULL;
++        etcfile.subname = "wmtictactoe";
++        etcfile.prefix = ".";
++        etcfile.suffix = "";
++        etcfile.mode = M_REGULAR_FILE;
++
++	rcfile = fopencfv(&etcfile, mode);
++
++	return rcfile;
++}
++
+ // ------------------------------------------------------------------------------
+ //    funcao: readfile
+ // descricao: lê o arquivo de configuracao da aplicação
+@@ -1048,13 +1076,10 @@
+ readfile (void)
+ {
+         FILE *rcfile;
+-	char rcfilen[256];
+ 	char buf[256];
+ 	int done;
+ 
+-	sprintf(rcfilen, "%s/.wmtictactoe", getenv("HOME"));
+-
+-	if ((rcfile=fopen(rcfilen, "r")) != NULL){
++	if ((rcfile=openfile("r")) != NULL){
+ 	        do {
+ 		        fgets(buf, 250, rcfile);
+ 			if((done = feof(rcfile)) == 0){
+@@ -1086,12 +1111,9 @@
+ void 
+ writefile (void)
+ {
+-        FILE *rcfile;
+-	char rcfilen[256];
+-
+-	sprintf(rcfilen, "%s/.wmtictactoe", getenv("HOME"));
++	FILE *rcfile;
+ 
+-	if ((rcfile=fopen(rcfilen, "w")) != NULL){
++	if ((rcfile=openfile("w")) != NULL){
+                 fprintf(rcfile, "score_user_offensive %d\nscore_deuce_offensive %d\nscore_X_offensive %d\n", score_user_offensive, score_deuce_offensive, score_X_offensive);
+                 fprintf(rcfile, "score_user_defensive %d\nscore_deuce_defensive %d\nscore_X_defensive %d\n", score_user_defensive, score_deuce_defensive, score_X_defensive);
+ 		fclose(rcfile);
