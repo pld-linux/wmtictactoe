@@ -1,7 +1,8 @@
 [Desktop Entry]
 Name=wmtictactoe
 Comment=TicTacToe
-Comment[pl]=KÛ≥ko i Krzyøyk
+Comment[pl]=K√≥≈Çko i Krzy≈ºyk
 Exec=wmtictactoe
 Terminal=0
 Type=Application
+# vi: encoding=utf-8
