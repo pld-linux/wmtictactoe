@@ -11,7 +11,6 @@ Source1:	wmtictactoe.desktop
 Patch0:		wmtictactoe-makefile.patch
 Patch1:		wmtictactoe-home_etc.patch
 BuildRequires:	XFree86-devel
-BuildRequires:	xpm-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define 	_prefix		/usr/X11R6
