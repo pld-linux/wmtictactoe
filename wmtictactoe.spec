@@ -28,7 +28,7 @@ wmTicTacToe jest gr± w Kó³ko i Krzy¿yk, przeznaczon± dla Doku WindowMakera.
 %patch1 -p1
 
 %build
-make -C %{name} CFLAGS="$RPM_OPT_FLAGS -Wall"
+%{__make} -C %{name} CFLAGS="$RPM_OPT_FLAGS -Wall"
 
 %install
 rm -rf $RPM_BUILD_ROOT
