@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=wmtictactoe
+Name=WmTictactoe
 Comment=TicTacToe
 Comment[pl]=Kółko i Krzyżyk
 Exec=wmtictactoe
