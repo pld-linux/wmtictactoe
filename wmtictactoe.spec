@@ -14,7 +14,6 @@ URL:		http://atlas.ucpel.tche.br/~acamargo/wmtictactoe.html
 BuildRequires:	XFree86-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define 	_prefix		/usr/X11R6
 
 %description
 wmTicTacToe is a dock application game for Window Maker.
