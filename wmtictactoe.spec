@@ -45,4 +45,4 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc CHANGES README TODO
 %attr(755,root,root) %{_bindir}/%{name}
-#%{_applnkdir}/DockApplets/%{name}.desktop
+#%%{_applnkdir}/DockApplets/%{name}.desktop
