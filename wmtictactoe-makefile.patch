@@ -1,0 +1,15 @@
+--- wmtictactoe/Makefile~	Mon Mar 29 17:41:40 1999
++++ wmtictactoe/Makefile	Thu Jul  8 00:50:00 1999
+@@ -1,9 +1,11 @@
+ LIBDIR = -L/usr/X11R6/lib
+ LIBS   = -lXpm -lXext -lX11
+ OBJS =  wmtictactoe.o ../wmgeneral/wmgeneral.o
++INCDIR = -I/usr/X11R6/include
++CFLAGS = -O2 -Wall -g
+ 
+ .c.o:
+-	cc -c -g -O2 -Wall $< -o $*.o
++	cc -c $(CFLAGS) $(INCDIR) $< -o $*.o
+ 
+ all: wmtictactoe
+ 

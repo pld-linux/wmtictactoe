@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=wmtictactoe
+Comment=TicTacToe
+Comment[pl]=Kó³ko i Krzy¿yk
+Exec=wmtictactoe
+Terminal=0
+Type=Application
