@@ -44,14 +44,3 @@ rm -rf $RPM_BUILD_ROOT
 %doc {CHANGES,README,TODO}.gz
 %attr(755,root,root) %{_bindir}/%{name}
 /etc/X11/applnk/DockApps/wmtictactoe.desktop
-
-%changelog
-* Thu Jul 8 1999 Piotr Czerwiñski <pius@pld.org.pl> 
-  [1.0-2]
-- added wmtictactoe.desktop file,
-- fixed Makefile (wmtictactoe-makefile.patch),
-- minor changes.
-
-* Tue May 25 1999 Piotr Czerwiñski <pius@pld.org.pl> 
-  [1.0-1]
-- initial RPM release.
