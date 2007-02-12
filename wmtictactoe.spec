@@ -1,5 +1,5 @@
 Summary:	TicTacToe for WindowMaker
-Summary(pl.UTF-8):   Kółko i Krzyżyk dla WindowMakera
+Summary(pl.UTF-8):	Kółko i Krzyżyk dla WindowMakera
 Name:		wmtictactoe
 Version:	1.1.1
 Release:	5
