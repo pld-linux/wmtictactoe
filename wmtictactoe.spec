@@ -1,5 +1,5 @@
 Summary:	TicTacToe for WindowMaker
-Summary(pl):	Kó³ko i Krzy¿yk dla WindowMakera
+Summary(pl.UTF-8):   KÃ³Å‚ko i KrzyÅ¼yk dla WindowMakera
 Name:		wmtictactoe
 Version:	1.1.1
 Release:	5
@@ -18,8 +18,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description
 wmTicTacToe is a dock application game for Window Maker.
 
-%description -l pl
-wmTicTacToe jest gr± w Kó³ko i Krzy¿yk, przeznaczon± dla Doku
+%description -l pl.UTF-8
+wmTicTacToe jest grÄ… w KÃ³Å‚ko i KrzyÅ¼yk, przeznaczonÄ… dla Doku
 WindowMakera.
 
 %prep
